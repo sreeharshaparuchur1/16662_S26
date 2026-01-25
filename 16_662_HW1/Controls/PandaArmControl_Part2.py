@@ -99,7 +99,14 @@ if __name__ == "__main__":
         force_sensor_max_time/model.opt.timestep))
 
     # Launch the simulate viewer
-    viewer.launch(model, data)
+    # viewer.launch(model, data) # this will indefinitely run the simulation until the viewer is closed
+    
+    with viewer.launch_passive(model, data) as v:
+        for _ in range(int(force_sensor_max_time/model.opt.timestep)):
+            mj.mj_step(model, data)
+            v.sync()
+        input("Press anything to continue...") # omit this to autoclose the viewer when time is up
+
 
     # Save recorded force and time points as a csv file
     force = np.reshape(force, (5000, 1))
