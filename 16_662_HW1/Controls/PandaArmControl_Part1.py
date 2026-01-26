@@ -2,7 +2,6 @@ import mujoco as mj
 from mujoco import viewer
 import numpy as np
 import math
-import quaternion
 
 
 # Set the XML filepath
