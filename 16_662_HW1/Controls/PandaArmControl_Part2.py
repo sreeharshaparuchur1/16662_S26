@@ -2,7 +2,6 @@ import mujoco as mj
 from mujoco import viewer
 import numpy as np
 import math
-import quaternion
 
 # Set the XML filepath
 xml_filepath = "../franka_emika_panda/panda_nohand_torque_sine_board.xml"
@@ -10,7 +9,7 @@ xml_filepath = "../franka_emika_panda/panda_nohand_torque_sine_board.xml"
 ################################# Control Callback Definitions #############################
 
 def get_board_control(model, data):
-    # Instantite a handle to the desired body on the robot
+    # Instantiate a handle to the desired body on the robot
     omega = 0.4
     data.ctrl[7] = 0.15*np.sin(omega*data.time) + 0.15
 
@@ -50,7 +49,7 @@ def impedance_control(model, data):
 
 def position_control(model, data):
 
-    # Instantite a handle to the desired body on the robot
+    # Instantiate a handle to the desired body on the robot
     body = data.body("hand")
 
     # Set the desired joint angle positions
@@ -88,7 +87,7 @@ if __name__ == "__main__":
     # compensation callback has been implemented for you. Run the file and play with the model as
     # explained in the PDF
 
-    mj.set_mjcb_control(gravity_comp)  # TODO:
+    mj.set_mjcb_control(gravity_comp)  # TODO: set Position, Force and Impedance control and test them
 
     ################################# Swap Callback Above This Line #################################
 
