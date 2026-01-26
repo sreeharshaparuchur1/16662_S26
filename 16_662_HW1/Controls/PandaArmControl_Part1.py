@@ -23,7 +23,7 @@ def force_control(model, data):  # TODO:
     # i.e. the x-axis of the robot arm base. You can use the comments as prompts or use your own flow
     # of code. The comments are simply meant to be a reference.
 
-    # Instantite a handle to the desired body on the robot
+    # Instantiate a handle to the desired body on the robot
 
     # Get the Jacobian for the desired location on the robot (The end-effector)
 
@@ -49,7 +49,7 @@ def impedance_control(model, data):  # TODO:
     # i.e. the x-axis of the robot arm base. You can use the comments as prompts or use your own flow
     # of code. The comments are simply meant to be a reference.
 
-    # Instantite a handle to the desired body on the robot
+    # Instantiate a handle to the desired body on the robot
 
     # Set the desired position
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     # compensation callback has been implemented for you. Run the file and play with the model as
     # explained in the PDF
 
-    mj.set_mjcb_control(gravity_comp)  # TODO:
+    mj.set_mjcb_control(gravity_comp)  # TODO: set Position, Force and Impedance control and test them
 
     ################################# Swap Callback Above This Line #################################
 
