@@ -2,17 +2,22 @@ from typing import List, Tuple, Dict, Optional, Iterable, Set
 from dataclasses import dataclass, field
 import heapq
 
-Predicate = Tuple[str, Tuple[str, ...]]   # e.g., ('at', ('robot','A'))
+# DO NOT MODIFY - start
+# -------------------------------------------------------------------------------
+
+Predicate = Tuple[str, Tuple[str, ...]]  # e.g., ('at', ('robot','A'))
 Subst = Dict[str, str]
 
 def is_var(x: str) -> bool:
     return isinstance(x, str) and x.startswith("?")
 
+
 def substitute(pred: Predicate, subst: Subst) -> Predicate:
     name, args = pred
     return (name, tuple(subst.get(a, a) for a in args))
 
-def unify(a: Predicate, b: Predicate, subst: Optional[Subst]=None) -> Optional[Subst]:
+
+def unify(a: Predicate, b: Predicate, subst: Optional[Subst] = None) -> Optional[Subst]:
     """Unify predicate a (may contain vars) with ground predicate b (state fact)."""
     if subst is None:
         subst = {}
@@ -28,6 +33,7 @@ def unify(a: Predicate, b: Predicate, subst: Optional[Subst]=None) -> Optional[S
             if av != bv:
                 return None
     return theta
+
 
 def unify_all(preconds: List[Predicate], state: Set[Predicate]) -> List[Subst]:
     """All substitutions that satisfy all preconditions in the given ground state."""
@@ -56,10 +62,20 @@ def unify_all(preconds: List[Predicate], state: Set[Predicate]) -> List[Subst]:
     return uniq
 
 @dataclass(frozen=True)
+class GroundAction:
+    name: str
+    args: Tuple[str, ...]
+    add: Tuple[Predicate, ...]
+    delete: Tuple[Predicate, ...]
+
+    def label(self) -> str:
+        return f"{self.name}({', '.join(self.args)})"
+    
+@dataclass(frozen=True)
 class ActionSchema:
     name: str
-    parameters: Tuple[str, ...]                 # variable names like ?x
-    preconds: Tuple[Predicate, ...]             # positive literals only (STRIPS)
+    parameters: Tuple[str, ...]  # variable names like ?x
+    preconds: Tuple[Predicate, ...]  # positive literals only (STRIPS)
     add_effects: Tuple[Predicate, ...]
     del_effects: Tuple[Predicate, ...] = field(default_factory=tuple)
 
@@ -68,22 +84,17 @@ class ActionSchema:
             name=self.name,
             args=tuple(subst.get(v, v) for v in self.parameters),
             add=tuple(substitute(p, subst) for p in self.add_effects),
-            delete=tuple(substitute(p, subst) for p in self.del_effects)
+            delete=tuple(substitute(p, subst) for p in self.del_effects),
         )
 
-@dataclass(frozen=True)
-class GroundAction:
-    name: str
-    args: Tuple[str, ...]
-    add: Tuple[Predicate, ...]
-    delete: Tuple[Predicate, ...]
-    def label(self) -> str:
-        return f"{self.name}({', '.join(self.args)})"
+# DO NOT MODIFY - end
+# -------------------------------------------------------------------------------
 
 class Planner:
     def __init__(self, actions: List[ActionSchema]):
-        self.actions = actions
+        self.actions = actions  # Initialize with all possible actions
 
+    # Get applicable actions for a given state
     def applicable_actions(self, state: Set[Predicate]) -> List[GroundAction]:
         out = []
         for schema in self.actions:
@@ -91,6 +102,7 @@ class Planner:
                 out.append(schema.ground(theta))
         return out
 
+    # Get new state from a given state and action
     def apply(self, state: Set[Predicate], action: GroundAction) -> Set[Predicate]:
         new_state = set(state)
         for d in action.delete:
@@ -100,43 +112,28 @@ class Planner:
             new_state.add(a)
         return new_state
 
+    # Simple goal-count heuristic - count goals that have not been reached
     def heuristic(self, state: Set[Predicate], goal: Set[Predicate]) -> int:
-        # Simple goal-count heuristic
         return sum(1 for g in goal if g not in state)
 
-    def plan(self, init: Iterable[Predicate], goal: Iterable[Predicate], max_expansions: int = 50000):
+    # Search for a plan from 'init' state to 'goal' state within 'max_expansions' steps
+    def plan(
+        self,
+        init: Iterable[Predicate],
+        goal: Iterable[Predicate],
+        max_expansions: int = 50000, # DO NOT MODIFY THIS
+    ):
         init_state = frozenset(init)
         goal_set = set(goal)
 
-        # A* over state space
+        # Setup A* over state space
         frontier = []
         g_cost = {init_state: 0}
-        parent = {init_state: (None, None)}  # state -> (prev_state, action)
+        parent = {init_state: (None, None)}  # parent_state + action = new_state
         h0 = self.heuristic(set(init_state), goal_set)
         heapq.heappush(frontier, (h0, 0, init_state))
 
-        expansions = 0
-        while frontier and expansions < max_expansions:
-            f, gc, state = heapq.heappop(frontier)
-            expansions += 1
+        # TODO 1.2: Implement A* search and return list[GroundAction] as the plan if found, else None
+        # HINT: Refer to lecture slides for pseudocode
 
-            if all(g in state for g in goal_set):
-                # Reconstruct plan
-                seq, s = [], state
-                while parent[s][0] is not None:
-                    prev, act = parent[s]
-                    seq.append(act)
-                    s = prev
-                seq.reverse()
-                return seq  # list[GroundAction]
-
-            for act in self.applicable_actions(set(state)):
-                new_state = frozenset(self.apply(set(state), act))
-                new_g = gc + 1
-                if new_state not in g_cost or new_g < g_cost[new_state]:
-                    g_cost[new_state] = new_g
-                    parent[new_state] = (state, act)
-                    h = self.heuristic(set(new_state), goal_set)
-                    heapq.heappush(frontier, (new_g + h, new_g, new_state))
-
-        return None  # no plan found within limits
+        return NotImplementedError
