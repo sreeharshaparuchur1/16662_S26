@@ -69,10 +69,9 @@ def make_Room_domain():
 
 
 def make_Block_domain():
-
-    return []
-
-
+    #TODO: Define action schemas for different actions that you think would be required to solve problems in the Blocks World Domain 
+    #Hint: Check the example problem in make_Block_problem() to get an idea of the actions required to solve it 
+    return NotImplementedError
 
 def make_Room_problem():
 
@@ -99,8 +98,6 @@ def make_Room_problem():
     return init, goal
 
 
-
-
 def make_Block_problem():
     init = {
         ("on", ("a","b")),
@@ -116,18 +113,18 @@ def make_Block_problem():
     return init, goal
 
 def make_Block2_problem():
-    #TODO
+    #TODO: Write out the initial and goal states for the problem illustrated in the handout.
     init = {
     }
     goal = {
     }
     return init, goal
 
-
-
 if __name__ == "__main__":
-    planner = sp.Planner(make_Room_domain())
-    init, goal = make_Room_problem()
+    # TODO: 1.1: Once you understand what this block does, update it to use make_Block_domain() and make_Block_problem() to generate the plan.
+    # TODO: 1.2: Update the problem with the one you define in make_Block2_problem()
+    planner = sp.Planner(make_Room_domain()) # <-- Replace this
+    init, goal = make_Room_problem() # <-- Replace This
     plan = planner.plan(init, goal)
     if plan is None:
         print("No plan found.")
